@@ -1,9 +1,10 @@
 import {
   LayoutDashboard, BookOpen, FileText, Calendar,
-  Megaphone, Search, LogOut, GraduationCap
+  Megaphone, Search, LogOut, GraduationCap, ShieldCheck
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/contexts/AuthContext';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent,
   SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -24,6 +25,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
   const { signOut } = useAuth();
+  const { isAdmin } = useIsAdmin();
 
   return (
     <Sidebar collapsible="icon" className="border-r-0">
@@ -56,6 +58,22 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+
+              {/* Admin Link */}
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild>
+                    <NavLink
+                      to="/admin"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-warning transition-all duration-200 hover:bg-warning/10 hover:text-warning"
+                      activeClassName="bg-warning/10 text-warning font-semibold shadow-sm"
+                    >
+                      <ShieldCheck className="h-5 w-5 shrink-0" />
+                      {!collapsed && <span>Admin Panel</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
