@@ -2,18 +2,11 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, FileText, Trash2, X } from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
+import { SkeletonCard } from '@/components/SkeletonCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-
-interface Note {
-  id: string;
-  title: string;
-  content: string;
-  subject: string;
-  createdAt: string;
-}
+import { useNotes } from '@/hooks/useNotes';
 
 const colors = [
   'from-primary/20 to-primary/5',
@@ -24,26 +17,17 @@ const colors = [
 ];
 
 export default function Notes() {
-  const [notes, setNotes] = useState<Note[]>([
-    { id: '1', title: 'Quantum Mechanics Basics', content: 'Wave-particle duality, Heisenberg uncertainty principle...', subject: 'Physics', createdAt: '2026-03-28' },
-    { id: '2', title: 'Integration Techniques', content: 'Substitution, integration by parts, partial fractions...', subject: 'Math', createdAt: '2026-03-27' },
-    { id: '3', title: 'Shakespeare Analysis', content: 'Themes of power and ambition in Macbeth...', subject: 'English', createdAt: '2026-03-26' },
-  ]);
+  const { notes, isLoading, add, remove, isAdding } = useNotes();
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [subject, setSubject] = useState('');
-  const { toast } = useToast();
 
-  const addNote = () => {
-    if (!title.trim() || !content.trim()) {
-      toast({ title: 'Title and content required', variant: 'destructive' });
-      return;
-    }
-    setNotes(prev => [{ id: Date.now().toString(), title: title.trim(), content: content.trim(), subject: subject.trim() || 'General', createdAt: new Date().toISOString().split('T')[0] }, ...prev]);
+  const handleAdd = async () => {
+    if (!title.trim() || !content.trim()) return;
+    await add({ title: title.trim(), content: content.trim(), subject: subject.trim() || 'General' });
     setTitle(''); setContent(''); setSubject('');
     setShowForm(false);
-    toast({ title: 'Note saved!' });
   };
 
   return (
@@ -71,35 +55,46 @@ export default function Notes() {
                 <Input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject" className="rounded-xl bg-muted/50" />
               </div>
               <Textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Write your notes..." className="rounded-xl bg-muted/50 min-h-[120px]" />
-              <Button variant="gradient" onClick={addNote} className="rounded-xl">Save Note</Button>
+              <Button variant="gradient" onClick={handleAdd} disabled={isAdding || !title.trim() || !content.trim()} className="rounded-xl">
+                {isAdding ? <div className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" /> : 'Save Note'}
+              </Button>
             </GlassCard>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {notes.map((note, i) => (
-          <motion.div key={note.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
-            <GlassCard className={`space-y-3 bg-gradient-to-br ${colors[i % colors.length]}`}>
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-primary" />
-                  <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">{note.subject}</span>
+      {isLoading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, i) => <SkeletonCard key={i} lines={4} />)}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {notes.map((note, i) => (
+            <motion.div key={note.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
+              <GlassCard className={`space-y-3 bg-gradient-to-br ${colors[i % colors.length]}`}>
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">{note.subject}</span>
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => remove(note.id)}>
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
-                <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => {
-                  setNotes(prev => prev.filter(n => n.id !== note.id));
-                  toast({ title: 'Note deleted' });
-                }}>
-                  <Trash2 className="h-3.5 w-3.5" />
-                </Button>
-              </div>
-              <h3 className="font-semibold text-foreground">{note.title}</h3>
-              <p className="text-sm text-muted-foreground line-clamp-3">{note.content}</p>
-              <p className="text-xs text-muted-foreground">{note.createdAt}</p>
+                <h3 className="font-semibold text-foreground">{note.title}</h3>
+                <p className="text-sm text-muted-foreground line-clamp-3">{note.content}</p>
+                <p className="text-xs text-muted-foreground">{new Date(note.created_at).toLocaleDateString()}</p>
+              </GlassCard>
+            </motion.div>
+          ))}
+          {notes.length === 0 && (
+            <GlassCard hover={false} className="col-span-full text-center py-12">
+              <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+              <p className="text-muted-foreground">No notes yet. Create your first one!</p>
             </GlassCard>
-          </motion.div>
-        ))}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
