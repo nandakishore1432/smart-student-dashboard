@@ -44,6 +44,102 @@ export type Database = {
         }
         Relationships: []
       }
+      assignments: {
+        Row: {
+          completed: boolean
+          created_at: string
+          deadline: string | null
+          id: string
+          subject: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          subject?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          subject?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      lost_found: {
+        Row: {
+          contact: string
+          created_at: string
+          description: string
+          id: string
+          location: string
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          contact?: string
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          contact?: string
+          created_at?: string
+          description?: string
+          id?: string
+          location?: string
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          subject: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: string
+          created_at?: string
+          id?: string
+          subject?: string
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          subject?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
