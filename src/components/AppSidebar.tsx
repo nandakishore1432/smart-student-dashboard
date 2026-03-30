@@ -1,6 +1,6 @@
 import {
   LayoutDashboard, BookOpen, FileText, Calendar,
-  Megaphone, Search, LogOut, GraduationCap, ShieldCheck
+  Megaphone, Search, LogOut, GraduationCap, ShieldCheck, MessageCircle
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/contexts/AuthContext';
@@ -19,6 +19,7 @@ const navItems = [
   { title: 'Timetable', url: '/timetable', icon: Calendar },
   { title: 'Announcements', url: '/announcements', icon: Megaphone },
   { title: 'Lost & Found', url: '/lost-found', icon: Search },
+  { title: 'Chat', url: '/chat', icon: MessageCircle },
 ];
 
 export function AppSidebar() {
