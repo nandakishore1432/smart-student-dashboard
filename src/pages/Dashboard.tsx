@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { StatCard } from '@/components/StatCard';
 import { GlassCard } from '@/components/GlassCard';
 import { SkeletonCard } from '@/components/SkeletonCard';
+import { CompletionChart, WeeklyChart, ProductivityInsight } from '@/components/DashboardCharts';
 import { useAssignments } from '@/hooks/useAssignments';
 import { useAnnouncements } from '@/hooks/useAnnouncements';
 import { formatDistanceToNow } from 'date-fns';
@@ -42,6 +43,23 @@ export default function Dashboard() {
         <StatCard title="Notices" value={announcements.length} icon={Bell} color="accent" delay={0.4} />
       </div>
 
+      {/* Analytics Charts */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {isLoading ? (
+          <>
+            <SkeletonCard lines={4} />
+            <SkeletonCard lines={4} />
+            <SkeletonCard lines={4} />
+          </>
+        ) : (
+          <>
+            <CompletionChart assignments={assignments} />
+            <WeeklyChart assignments={assignments} />
+            <ProductivityInsight assignments={assignments} />
+          </>
+        )}
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {isLoading ? (
           <>
@@ -50,7 +68,7 @@ export default function Dashboard() {
           </>
         ) : (
           <>
-            <GlassCard delay={0.5} className="space-y-4">
+            <GlassCard delay={1.0} className="space-y-4">
               <h3 className="text-lg font-semibold text-foreground">📅 Upcoming Deadlines</h3>
               <div className="space-y-3">
                 {upcoming.length === 0 ? (
@@ -69,7 +87,7 @@ export default function Dashboard() {
               </div>
             </GlassCard>
 
-            <GlassCard delay={0.6} className="space-y-4">
+            <GlassCard delay={1.1} className="space-y-4">
               <h3 className="text-lg font-semibold text-foreground">📢 Recent Announcements</h3>
               <div className="space-y-3">
                 {announcements.length === 0 ? (

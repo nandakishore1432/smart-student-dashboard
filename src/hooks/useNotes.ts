@@ -8,6 +8,8 @@ export interface Note {
   title: string;
   content: string;
   subject: string;
+  file_url: string | null;
+  file_name: string | null;
   created_at: string;
 }
 
@@ -30,12 +32,14 @@ export function useNotes() {
   });
 
   const addMutation = useMutation({
-    mutationFn: async (n: { title: string; content: string; subject: string }) => {
+    mutationFn: async (n: { title: string; content: string; subject: string; file_url?: string | null; file_name?: string | null }) => {
       const { error } = await supabase.from('notes').insert({
         user_id: user!.id,
         title: n.title,
         content: n.content,
         subject: n.subject,
+        file_url: n.file_url || null,
+        file_name: n.file_name || null,
       });
       if (error) throw error;
     },

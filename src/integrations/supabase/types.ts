@@ -77,6 +77,30 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          display_name: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       lost_found: {
         Row: {
           contact: string
@@ -114,6 +138,8 @@ export type Database = {
         Row: {
           content: string
           created_at: string
+          file_name: string | null
+          file_url: string | null
           id: string
           subject: string
           title: string
@@ -123,6 +149,8 @@ export type Database = {
         Insert: {
           content?: string
           created_at?: string
+          file_name?: string | null
+          file_url?: string | null
           id?: string
           subject?: string
           title: string
@@ -132,6 +160,8 @@ export type Database = {
         Update: {
           content?: string
           created_at?: string
+          file_name?: string | null
+          file_url?: string | null
           id?: string
           subject?: string
           title?: string

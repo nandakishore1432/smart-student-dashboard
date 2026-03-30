@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { DashboardLayout } from "@/components/DashboardLayout";
+import { AIChatbot } from "@/components/AIChatbot";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -13,6 +14,7 @@ import Notes from "./pages/Notes";
 import Timetable from "./pages/Timetable";
 import Announcements from "./pages/Announcements";
 import LostFound from "./pages/LostFound";
+import Chat from "./pages/Chat";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
 
@@ -30,7 +32,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) return <Navigate to="/auth" replace />;
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <DashboardLayout>
+      {children}
+      <AIChatbot />
+    </DashboardLayout>
+  );
 }
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
@@ -47,7 +54,12 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 
   if (!user) return <Navigate to="/auth" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return (
+    <DashboardLayout>
+      {children}
+      <AIChatbot />
+    </DashboardLayout>
+  );
 }
 
 function AuthRoute() {
@@ -72,6 +84,7 @@ const App = () => (
             <Route path="/timetable" element={<ProtectedRoute><Timetable /></ProtectedRoute>} />
             <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
             <Route path="/lost-found" element={<ProtectedRoute><LostFound /></ProtectedRoute>} />
+            <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
