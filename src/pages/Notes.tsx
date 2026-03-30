@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, FileText, Trash2, X } from 'lucide-react';
+import { Plus, FileText, Trash2, X, Upload, Download, Loader2 } from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useNotes } from '@/hooks/useNotes';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const colors = [
   'from-primary/20 to-primary/5',
@@ -17,16 +20,40 @@ const colors = [
 ];
 
 export default function Notes() {
+  const { user } = useAuth();
+  const { toast } = useToast();
   const { notes, isLoading, add, remove, isAdding } = useNotes();
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [subject, setSubject] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
 
   const handleAdd = async () => {
     if (!title.trim() || !content.trim()) return;
-    await add({ title: title.trim(), content: content.trim(), subject: subject.trim() || 'General' });
-    setTitle(''); setContent(''); setSubject('');
+
+    let fileUrl: string | null = null;
+    let fileName: string | null = null;
+
+    if (file && user) {
+      setUploading(true);
+      const ext = file.name.split('.').pop();
+      const path = `${user.id}/${Date.now()}.${ext}`;
+      const { error } = await supabase.storage.from('note-files').upload(path, file);
+      if (error) {
+        toast({ title: 'File upload failed', description: error.message, variant: 'destructive' });
+        setUploading(false);
+        return;
+      }
+      const { data: urlData } = supabase.storage.from('note-files').getPublicUrl(path);
+      fileUrl = urlData.publicUrl;
+      fileName = file.name;
+      setUploading(false);
+    }
+
+    await add({ title: title.trim(), content: content.trim(), subject: subject.trim() || 'General', file_url: fileUrl, file_name: fileName });
+    setTitle(''); setContent(''); setSubject(''); setFile(null);
     setShowForm(false);
   };
 
@@ -55,8 +82,23 @@ export default function Notes() {
                 <Input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Subject" className="rounded-xl bg-muted/50" />
               </div>
               <Textarea value={content} onChange={e => setContent(e.target.value)} placeholder="Write your notes..." className="rounded-xl bg-muted/50 min-h-[120px]" />
-              <Button variant="gradient" onClick={handleAdd} disabled={isAdding || !title.trim() || !content.trim()} className="rounded-xl">
-                {isAdding ? <div className="h-4 w-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" /> : 'Save Note'}
+
+              {/* File Upload */}
+              <div className="flex items-center gap-3">
+                <label className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/50 border border-border/50 cursor-pointer hover:bg-muted transition-colors text-sm text-muted-foreground">
+                  <Upload className="h-4 w-4" />
+                  {file ? file.name : 'Attach file'}
+                  <input type="file" className="hidden" onChange={e => setFile(e.target.files?.[0] || null)} />
+                </label>
+                {file && (
+                  <Button variant="ghost" size="sm" onClick={() => setFile(null)} className="text-xs text-muted-foreground">
+                    Remove
+                  </Button>
+                )}
+              </div>
+
+              <Button variant="gradient" onClick={handleAdd} disabled={isAdding || uploading || !title.trim() || !content.trim()} className="rounded-xl">
+                {(isAdding || uploading) ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Save Note'}
               </Button>
             </GlassCard>
           </motion.div>
@@ -83,6 +125,17 @@ export default function Notes() {
                 </div>
                 <h3 className="font-semibold text-foreground">{note.title}</h3>
                 <p className="text-sm text-muted-foreground line-clamp-3">{note.content}</p>
+                {note.file_url && (
+                  <a
+                    href={note.file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
+                  >
+                    <Download className="h-3.5 w-3.5" />
+                    {note.file_name || 'Download file'}
+                  </a>
+                )}
                 <p className="text-xs text-muted-foreground">{new Date(note.created_at).toLocaleDateString()}</p>
               </GlassCard>
             </motion.div>
