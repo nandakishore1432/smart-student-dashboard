@@ -42,6 +42,7 @@ export function TopNavbar() {
     { name: 'Timetable', path: '/timetable' },
     { name: 'Announcements', path: '/announcements' },
     { name: 'Lost & Found', path: '/lost-found' },
+    { name: 'Chat', path: '/chat' },
   ];
 
   const filteredPages = searchQuery
