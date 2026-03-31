@@ -1,24 +1,43 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, CheckCircle, Circle, X, BookOpen } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, Circle, X, BookOpen, Pencil } from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAssignments } from '@/hooks/useAssignments';
+import { useAssignments, Assignment } from '@/hooks/useAssignments';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 export default function Assignments() {
-  const { assignments, isLoading, add, toggle, remove, isAdding } = useAssignments();
+  const { assignments, isLoading, add, toggle, remove, edit, isAdding, isEditing } = useAssignments();
+  const { isAdmin } = useIsAdmin();
   const [showForm, setShowForm] = useState(false);
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState('');
+  const [editSubject, setEditSubject] = useState('');
+  const [editDeadline, setEditDeadline] = useState('');
 
   const handleAdd = async () => {
     if (!title.trim()) return;
     await add({ title: title.trim(), subject: subject.trim() || 'General', deadline: deadline || null });
     setTitle(''); setSubject(''); setDeadline('');
     setShowForm(false);
+  };
+
+  const startEdit = (a: Assignment) => {
+    setEditingId(a.id);
+    setEditTitle(a.title);
+    setEditSubject(a.subject);
+    setEditDeadline(a.deadline || '');
+  };
+
+  const handleEdit = async () => {
+    if (!editingId || !editTitle.trim()) return;
+    await edit({ id: editingId, title: editTitle.trim(), subject: editSubject.trim() || 'General', deadline: editDeadline || null });
+    setEditingId(null);
   };
 
   const pending = assignments.filter(a => !a.completed);
@@ -69,16 +88,46 @@ export default function Assignments() {
                     ? <CheckCircle className="h-5 w-5 text-success" />
                     : <Circle className="h-5 w-5 text-muted-foreground hover:text-primary transition-colors" />}
                 </button>
-                <div className="flex-1 min-w-0">
-                  <p className={`font-medium text-foreground ${a.completed ? 'line-through opacity-50' : ''}`}>{a.title}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">{a.subject}</span>
-                    {a.deadline && <span className="text-xs text-muted-foreground">{a.deadline}</span>}
+
+                {editingId === a.id ? (
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <Input value={editTitle} onChange={e => setEditTitle(e.target.value)} placeholder="Title" className="rounded-xl bg-muted/50 h-8 text-sm" />
+                      <Input value={editSubject} onChange={e => setEditSubject(e.target.value)} placeholder="Subject" className="rounded-xl bg-muted/50 h-8 text-sm" />
+                      <Input type="date" value={editDeadline} onChange={e => setEditDeadline(e.target.value)} className="rounded-xl bg-muted/50 h-8 text-sm" />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button variant="gradient" size="sm" onClick={handleEdit} disabled={isEditing || !editTitle.trim()} className="rounded-xl h-7 text-xs">
+                        {isEditing ? <div className="h-3 w-3 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" /> : 'Save'}
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => setEditingId(null)} className="rounded-xl h-7 text-xs">Cancel</Button>
+                    </div>
                   </div>
+                ) : (
+                  <div className="flex-1 min-w-0">
+                    <p className={`font-medium text-foreground ${a.completed ? 'line-through opacity-50' : ''}`}>{a.title}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">{a.subject}</span>
+                      {a.deadline && <span className="text-xs text-muted-foreground">{a.deadline}</span>}
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-1 shrink-0">
+                  {isAdmin && editingId !== a.id && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-muted-foreground hover:text-primary transition-colors"
+                      onClick={() => startEdit(a)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-destructive" onClick={() => remove(a.id)}>
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button variant="ghost" size="icon" className="shrink-0 text-muted-foreground hover:text-destructive" onClick={() => remove(a.id)}>
-                  <Trash2 className="h-4 w-4" />
-                </Button>
               </GlassCard>
             </motion.div>
           ))}

@@ -68,12 +68,29 @@ export function useAssignments() {
     onError: (e: Error) => toast({ title: e.message, variant: 'destructive' }),
   });
 
+  const editMutation = useMutation({
+    mutationFn: async (a: { id: string; title: string; subject: string; deadline: string | null }) => {
+      const { error } = await supabase
+        .from('assignments')
+        .update({ title: a.title, subject: a.subject, deadline: a.deadline || null })
+        .eq('id', a.id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['assignments'] });
+      toast({ title: 'Assignment updated!' });
+    },
+    onError: (e: Error) => toast({ title: e.message, variant: 'destructive' }),
+  });
+
   return {
     assignments: query.data ?? [],
     isLoading: query.isLoading,
     add: addMutation.mutateAsync,
     toggle: toggleMutation.mutate,
     remove: deleteMutation.mutate,
+    edit: editMutation.mutateAsync,
     isAdding: addMutation.isPending,
+    isEditing: editMutation.isPending,
   };
 }
