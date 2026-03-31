@@ -1,5 +1,6 @@
-import { motion } from 'framer-motion';
-import { BookOpen, Clock, Bell, CheckCircle } from 'lucide-react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, Clock, Bell, CheckCircle, Plus, X, Sparkles, ListTodo, Target } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { StatCard } from '@/components/StatCard';
 import { GlassCard } from '@/components/GlassCard';
@@ -8,12 +9,26 @@ import { CompletionChart, WeeklyChart, ProductivityInsight } from '@/components/
 import { useAssignments } from '@/hooks/useAssignments';
 import { useAnnouncements } from '@/hooks/useAnnouncements';
 import { formatDistanceToNow } from 'date-fns';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog';
 
 export default function Dashboard() {
   const { user } = useAuth();
-  const { assignments, isLoading: aLoading } = useAssignments();
+  const { assignments, isLoading: aLoading, add, isAdding } = useAssignments();
   const { announcements, isLoading: nLoading } = useAnnouncements();
   const name = user?.email?.split('@')[0] || 'Student';
+
+  const [fabOpen, setFabOpen] = useState(false);
+  const [title, setTitle] = useState('');
+  const [subject, setSubject] = useState('');
+  const [deadline, setDeadline] = useState('');
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
@@ -27,8 +42,18 @@ export default function Dashboard() {
 
   const isLoading = aLoading || nLoading;
 
+  const handleQuickAdd = async () => {
+    if (!title.trim()) return;
+    await add({ title: title.trim(), subject: subject.trim() || 'General', deadline: deadline || null });
+    setTitle('');
+    setSubject('');
+    setDeadline('');
+    setFabOpen(false);
+  };
+
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
+      {/* Greeting */}
       <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
         <h1 className="text-2xl md:text-3xl font-bold text-foreground">
           {greeting}, <span className="gradient-text capitalize">{name}</span> 👋
@@ -36,6 +61,7 @@ export default function Dashboard() {
         <p className="text-muted-foreground">Here's what's happening with your studies today.</p>
       </motion.div>
 
+      {/* Stat Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Total" value={assignments.length} icon={BookOpen} color="primary" delay={0.1} />
         <StatCard title="Pending" value={pending.length} icon={Clock} color="warning" delay={0.2} />
@@ -60,6 +86,7 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Deadlines & Announcements */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {isLoading ? (
           <>
@@ -69,12 +96,24 @@ export default function Dashboard() {
         ) : (
           <>
             <GlassCard delay={1.0} className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground">📅 Upcoming Deadlines</h3>
+              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <Target className="h-5 w-5 text-primary" /> Upcoming Deadlines
+              </h3>
               <div className="space-y-3">
                 {upcoming.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No upcoming deadlines 🎉</p>
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
+                      <Sparkles className="h-10 w-10 text-primary/40 mb-3" />
+                    </motion.div>
+                    <p className="text-sm font-medium text-muted-foreground">No upcoming deadlines 🎉</p>
+                    <p className="text-xs text-muted-foreground/60 mt-1">You're all clear — enjoy your day!</p>
+                  </div>
                 ) : upcoming.map(a => (
-                  <div key={a.id} className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
+                  <motion.div
+                    key={a.id}
+                    whileHover={{ scale: 1.02 }}
+                    className="flex items-center justify-between rounded-xl bg-muted/50 p-3 transition-colors hover:bg-muted/70"
+                  >
                     <div className="min-w-0">
                       <span className="text-sm font-medium text-foreground block truncate">{a.title}</span>
                       <span className="text-xs text-muted-foreground">{a.subject}</span>
@@ -82,29 +121,74 @@ export default function Dashboard() {
                     <span className="text-xs font-semibold px-2 py-1 rounded-lg bg-primary/10 text-primary shrink-0">
                       {a.deadline}
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </GlassCard>
 
             <GlassCard delay={1.1} className="space-y-4">
-              <h3 className="text-lg font-semibold text-foreground">📢 Recent Announcements</h3>
+              <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <Bell className="h-5 w-5 text-accent" /> Recent Announcements
+              </h3>
               <div className="space-y-3">
                 {announcements.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No announcements yet</p>
+                  <div className="flex flex-col items-center justify-center py-8 text-center">
+                    <motion.div initial={{ scale: 0.8 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}>
+                      <ListTodo className="h-10 w-10 text-accent/40 mb-3" />
+                    </motion.div>
+                    <p className="text-sm font-medium text-muted-foreground">No announcements yet</p>
+                    <p className="text-xs text-muted-foreground/60 mt-1">Check back later for updates.</p>
+                  </div>
                 ) : announcements.slice(0, 3).map(a => (
-                  <div key={a.id} className="flex items-center justify-between rounded-xl bg-muted/50 p-3">
+                  <motion.div
+                    key={a.id}
+                    whileHover={{ scale: 1.02 }}
+                    className="flex items-center justify-between rounded-xl bg-muted/50 p-3 transition-colors hover:bg-muted/70"
+                  >
                     <span className="text-sm font-medium text-foreground truncate">{a.title}</span>
                     <span className="text-xs text-muted-foreground shrink-0">
                       {formatDistanceToNow(new Date(a.created_at), { addSuffix: true })}
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </GlassCard>
           </>
         )}
       </div>
+
+      {/* Floating Action Button */}
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setFabOpen(true)}
+        className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full gradient-primary shadow-glow flex items-center justify-center text-primary-foreground"
+      >
+        <Plus className="h-6 w-6" />
+      </motion.button>
+
+      {/* Quick Add Dialog */}
+      <Dialog open={fabOpen} onOpenChange={setFabOpen}>
+        <DialogContent className="glass sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Quick Add Assignment</DialogTitle>
+            <DialogDescription>Add a new task right from the dashboard.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 pt-2">
+            <Input placeholder="Assignment title *" value={title} onChange={e => setTitle(e.target.value)} />
+            <Input placeholder="Subject (optional)" value={subject} onChange={e => setSubject(e.target.value)} />
+            <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} />
+            <Button
+              onClick={handleQuickAdd}
+              disabled={isAdding || !title.trim()}
+              className="w-full"
+              variant="gradient"
+            >
+              {isAdding ? 'Adding…' : 'Add Assignment'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
