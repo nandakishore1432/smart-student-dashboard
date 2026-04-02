@@ -178,6 +178,14 @@ export default function Dashboard() {
             <Input placeholder="Assignment title *" value={title} onChange={e => setTitle(e.target.value)} />
             <Input placeholder="Subject (optional)" value={subject} onChange={e => setSubject(e.target.value)} />
             <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} />
+            <Select value={priority} onValueChange={v => setPriority(v as Priority)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="high">🔴 High</SelectItem>
+                <SelectItem value="medium">🟡 Medium</SelectItem>
+                <SelectItem value="low">🟢 Low</SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               onClick={handleQuickAdd}
               disabled={isAdding || !title.trim()}
