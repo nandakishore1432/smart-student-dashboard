@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Clock, Bell, CheckCircle, Plus, X, Sparkles, ListTodo, Target } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/contexts/AuthContext';
 import { StatCard } from '@/components/StatCard';
 import { GlassCard } from '@/components/GlassCard';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { CompletionChart, WeeklyChart, ProductivityInsight } from '@/components/DashboardCharts';
-import { useAssignments } from '@/hooks/useAssignments';
+import { useAssignments, Priority } from '@/hooks/useAssignments';
 import { useAnnouncements } from '@/hooks/useAnnouncements';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
@@ -29,6 +30,7 @@ export default function Dashboard() {
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [deadline, setDeadline] = useState('');
+  const [priority, setPriority] = useState<Priority>('medium');
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good Morning' : hour < 17 ? 'Good Afternoon' : 'Good Evening';
@@ -44,10 +46,8 @@ export default function Dashboard() {
 
   const handleQuickAdd = async () => {
     if (!title.trim()) return;
-    await add({ title: title.trim(), subject: subject.trim() || 'General', deadline: deadline || null });
-    setTitle('');
-    setSubject('');
-    setDeadline('');
+    await add({ title: title.trim(), subject: subject.trim() || 'General', deadline: deadline || null, priority });
+    setTitle(''); setSubject(''); setDeadline(''); setPriority('medium');
     setFabOpen(false);
   };
 
@@ -178,6 +178,14 @@ export default function Dashboard() {
             <Input placeholder="Assignment title *" value={title} onChange={e => setTitle(e.target.value)} />
             <Input placeholder="Subject (optional)" value={subject} onChange={e => setSubject(e.target.value)} />
             <Input type="date" value={deadline} onChange={e => setDeadline(e.target.value)} />
+            <Select value={priority} onValueChange={v => setPriority(v as Priority)}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="high">🔴 High</SelectItem>
+                <SelectItem value="medium">🟡 Medium</SelectItem>
+                <SelectItem value="low">🟢 Low</SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               onClick={handleQuickAdd}
               disabled={isAdding || !title.trim()}
