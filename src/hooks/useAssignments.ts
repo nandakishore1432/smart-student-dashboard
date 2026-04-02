@@ -73,10 +73,10 @@ export function useAssignments() {
   });
 
   const editMutation = useMutation({
-    mutationFn: async (a: { id: string; title: string; subject: string; deadline: string | null }) => {
+    mutationFn: async (a: { id: string; title: string; subject: string; deadline: string | null; priority?: Priority }) => {
       const { error } = await supabase
         .from('assignments')
-        .update({ title: a.title, subject: a.subject, deadline: a.deadline || null })
+        .update({ title: a.title, subject: a.subject, deadline: a.deadline || null, priority: a.priority || 'medium' })
         .eq('id', a.id);
       if (error) throw error;
     },
