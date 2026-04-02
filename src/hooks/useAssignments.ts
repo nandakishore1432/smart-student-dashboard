@@ -3,12 +3,15 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 
+export type Priority = 'low' | 'medium' | 'high';
+
 export interface Assignment {
   id: string;
   title: string;
   subject: string;
   deadline: string | null;
   completed: boolean;
+  priority: Priority;
   created_at: string;
 }
 
