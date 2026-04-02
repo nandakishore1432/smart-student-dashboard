@@ -34,12 +34,13 @@ export function useAssignments() {
   });
 
   const addMutation = useMutation({
-    mutationFn: async (a: { title: string; subject: string; deadline: string | null }) => {
+    mutationFn: async (a: { title: string; subject: string; deadline: string | null; priority?: Priority }) => {
       const { error } = await supabase.from('assignments').insert({
         user_id: user!.id,
         title: a.title,
         subject: a.subject,
         deadline: a.deadline || null,
+        priority: a.priority || 'medium',
       });
       if (error) throw error;
     },
