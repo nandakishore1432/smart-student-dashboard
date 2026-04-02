@@ -46,10 +46,8 @@ export default function Dashboard() {
 
   const handleQuickAdd = async () => {
     if (!title.trim()) return;
-    await add({ title: title.trim(), subject: subject.trim() || 'General', deadline: deadline || null });
-    setTitle('');
-    setSubject('');
-    setDeadline('');
+    await add({ title: title.trim(), subject: subject.trim() || 'General', deadline: deadline || null, priority });
+    setTitle(''); setSubject(''); setDeadline(''); setPriority('medium');
     setFabOpen(false);
   };
 
