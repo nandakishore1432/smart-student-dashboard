@@ -7,7 +7,7 @@ import { StatCard } from '@/components/StatCard';
 import { GlassCard } from '@/components/GlassCard';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { CompletionChart, WeeklyChart, ProductivityInsight } from '@/components/DashboardCharts';
-import { useAssignments } from '@/hooks/useAssignments';
+import { useAssignments, Priority } from '@/hooks/useAssignments';
 import { useAnnouncements } from '@/hooks/useAnnouncements';
 import { formatDistanceToNow } from 'date-fns';
 import { Button } from '@/components/ui/button';
