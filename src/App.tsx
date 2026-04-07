@@ -16,6 +16,8 @@ import Announcements from "./pages/Announcements";
 import LostFound from "./pages/LostFound";
 import Chat from "./pages/Chat";
 import AdminDashboard from "./pages/AdminDashboard";
+import Tutorials from "./pages/Tutorials";
+import SkillExchange from "./pages/SkillExchange";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
