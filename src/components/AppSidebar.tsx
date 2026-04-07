@@ -1,6 +1,7 @@
 import {
   LayoutDashboard, BookOpen, FileText, Calendar,
-  Megaphone, Search, LogOut, GraduationCap, ShieldCheck, MessageCircle
+  Megaphone, Search, LogOut, GraduationCap, ShieldCheck, MessageCircle,
+  Lightbulb, Users
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/contexts/AuthContext';
