@@ -194,10 +194,15 @@ export default function Assignments() {
                     <div className="flex items-center gap-2">
                       <p className={`font-medium text-foreground ${a.completed ? 'line-through opacity-50' : ''}`}>{a.title}</p>
                       <PriorityBadge priority={a.priority || 'medium'} />
+                      <DueBadge deadline={a.deadline} completed={a.completed} />
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">{a.subject}</span>
-                      {a.deadline && <span className="text-xs text-muted-foreground">{a.deadline}</span>}
+                      {a.deadline && (
+                        <span className={`text-xs ${isOverdue(a.deadline) && !a.completed ? 'text-destructive font-semibold' : isDueSoon(a.deadline) && !a.completed ? 'text-warning font-semibold' : 'text-muted-foreground'}`}>
+                          {a.deadline}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
