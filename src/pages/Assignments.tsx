@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, CheckCircle, Circle, X, BookOpen, Pencil } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, Circle, X, BookOpen, Pencil, AlertTriangle, Clock } from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { Button } from '@/components/ui/button';
