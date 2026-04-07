@@ -118,7 +118,15 @@ export default function Dashboard() {
                       <span className="text-sm font-medium text-foreground block truncate">{a.title}</span>
                       <span className="text-xs text-muted-foreground">{a.subject}</span>
                     </div>
-                    <span className="text-xs font-semibold px-2 py-1 rounded-lg bg-primary/10 text-primary shrink-0">
+                    <span className={`text-xs font-semibold px-2 py-1 rounded-lg shrink-0 ${
+                      (() => {
+                        const d = new Date(a.deadline! + 'T23:59:59');
+                        const diff = d.getTime() - Date.now();
+                        if (diff < 0) return 'bg-destructive/15 text-destructive';
+                        if (diff <= 24 * 60 * 60 * 1000) return 'bg-warning/15 text-warning animate-pulse';
+                        return 'bg-primary/10 text-primary';
+                      })()
+                    }`}>
                       {a.deadline}
                     </span>
                   </motion.div>

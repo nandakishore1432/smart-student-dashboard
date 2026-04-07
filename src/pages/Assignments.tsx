@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Trash2, CheckCircle, Circle, X, BookOpen, Pencil } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, Circle, X, BookOpen, Pencil, AlertTriangle, Clock } from 'lucide-react';
 import { GlassCard } from '@/components/GlassCard';
 import { SkeletonCard } from '@/components/SkeletonCard';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,39 @@ const PRIORITY_CONFIG: Record<Priority, { label: string; class: string }> = {
 };
 
 const PRIORITY_ORDER: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
+
+function isDueSoon(deadline: string | null): boolean {
+  if (!deadline) return false;
+  const deadlineDate = new Date(deadline + 'T23:59:59');
+  const now = new Date();
+  const diff = deadlineDate.getTime() - now.getTime();
+  return diff > 0 && diff <= 24 * 60 * 60 * 1000;
+}
+
+function isOverdue(deadline: string | null): boolean {
+  if (!deadline) return false;
+  const deadlineDate = new Date(deadline + 'T23:59:59');
+  return deadlineDate.getTime() < Date.now();
+}
+
+function DueBadge({ deadline, completed }: { deadline: string | null; completed: boolean }) {
+  if (completed || !deadline) return null;
+  if (isOverdue(deadline)) {
+    return (
+      <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-destructive/15 text-destructive border-destructive/30 animate-pulse gap-1">
+        <AlertTriangle className="h-3 w-3" /> Overdue
+      </Badge>
+    );
+  }
+  if (isDueSoon(deadline)) {
+    return (
+      <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-warning/15 text-warning border-warning/30 animate-pulse gap-1">
+        <Clock className="h-3 w-3" /> Due Soon
+      </Badge>
+    );
+  }
+  return null;
+}
 
 function PriorityBadge({ priority }: { priority: Priority }) {
   const cfg = PRIORITY_CONFIG[priority];
@@ -161,10 +194,15 @@ export default function Assignments() {
                     <div className="flex items-center gap-2">
                       <p className={`font-medium text-foreground ${a.completed ? 'line-through opacity-50' : ''}`}>{a.title}</p>
                       <PriorityBadge priority={a.priority || 'medium'} />
+                      <DueBadge deadline={a.deadline} completed={a.completed} />
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">{a.subject}</span>
-                      {a.deadline && <span className="text-xs text-muted-foreground">{a.deadline}</span>}
+                      {a.deadline && (
+                        <span className={`text-xs ${isOverdue(a.deadline) && !a.completed ? 'text-destructive font-semibold' : isDueSoon(a.deadline) && !a.completed ? 'text-warning font-semibold' : 'text-muted-foreground'}`}>
+                          {a.deadline}
+                        </span>
+                      )}
                     </div>
                   </div>
                 )}
