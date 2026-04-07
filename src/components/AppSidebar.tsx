@@ -1,6 +1,7 @@
 import {
   LayoutDashboard, BookOpen, FileText, Calendar,
-  Megaphone, Search, LogOut, GraduationCap, ShieldCheck, MessageCircle
+  Megaphone, Search, LogOut, GraduationCap, ShieldCheck, MessageCircle,
+  Lightbulb, Users
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +21,8 @@ const navItems = [
   { title: 'Announcements', url: '/announcements', icon: Megaphone },
   { title: 'Lost & Found', url: '/lost-found', icon: Search },
   { title: 'Chat', url: '/chat', icon: MessageCircle },
+  { title: 'Tutorials', url: '/tutorials', icon: Lightbulb },
+  { title: 'Skill Exchange', url: '/skill-exchange', icon: Users },
 ];
 
 export function AppSidebar() {

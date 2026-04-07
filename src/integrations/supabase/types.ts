@@ -203,6 +203,63 @@ export type Database = {
         }
         Relationships: []
       }
+      skill_exchange: {
+        Row: {
+          contact: string
+          created_at: string
+          display_name: string
+          id: string
+          skill_offer: string
+          skill_wanted: string
+          user_id: string
+        }
+        Insert: {
+          contact?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          skill_offer: string
+          skill_wanted: string
+          user_id: string
+        }
+        Update: {
+          contact?: string
+          created_at?: string
+          display_name?: string
+          id?: string
+          skill_offer?: string
+          skill_wanted?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tutorials: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          title?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

@@ -16,6 +16,8 @@ import Announcements from "./pages/Announcements";
 import LostFound from "./pages/LostFound";
 import Chat from "./pages/Chat";
 import AdminDashboard from "./pages/AdminDashboard";
+import Tutorials from "./pages/Tutorials";
+import SkillExchange from "./pages/SkillExchange";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -85,6 +87,8 @@ const App = () => (
             <Route path="/announcements" element={<ProtectedRoute><Announcements /></ProtectedRoute>} />
             <Route path="/lost-found" element={<ProtectedRoute><LostFound /></ProtectedRoute>} />
             <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+            <Route path="/tutorials" element={<ProtectedRoute><Tutorials /></ProtectedRoute>} />
+            <Route path="/skill-exchange" element={<ProtectedRoute><SkillExchange /></ProtectedRoute>} />
             <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
