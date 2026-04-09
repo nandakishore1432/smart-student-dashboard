@@ -54,8 +54,9 @@ export default function Dashboard() {
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Greeting */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1">
-        <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="space-y-1 relative">
+        <div className="absolute -top-8 -left-8 w-32 h-32 rounded-full gradient-primary opacity-10 blur-3xl animate-float" />
+        <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
           {greeting}, <span className="gradient-text capitalize">{name}</span> 👋
         </h1>
         <p className="text-muted-foreground">Here's what's happening with your studies today.</p>
