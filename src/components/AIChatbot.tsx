@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useAssignments } from '@/hooks/useAssignments';
 import { useAnnouncements } from '@/hooks/useAnnouncements';
 import ReactMarkdown from 'react-markdown';
+import { supabase } from '@/integrations/supabase/client';
 
 type Msg = { role: 'user' | 'assistant'; content: string };
 
