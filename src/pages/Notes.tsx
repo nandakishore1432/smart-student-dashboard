@@ -46,8 +46,7 @@ export default function Notes() {
         setUploading(false);
         return;
       }
-      const { data: urlData } = supabase.storage.from('note-files').getPublicUrl(path);
-      fileUrl = urlData.publicUrl;
+      fileUrl = path; // Store the path, not a public URL (bucket is now private)
       fileName = file.name;
       setUploading(false);
     }
@@ -126,15 +125,17 @@ export default function Notes() {
                 <h3 className="font-semibold text-foreground">{note.title}</h3>
                 <p className="text-sm text-muted-foreground line-clamp-3">{note.content}</p>
                 {note.file_url && (
-                  <a
-                    href={note.file_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={async () => {
+                      const { data, error } = await supabase.storage.from('note-files').createSignedUrl(note.file_url!, 60);
+                      if (data?.signedUrl) window.open(data.signedUrl, '_blank');
+                      else toast({ title: 'Could not generate download link', variant: 'destructive' });
+                    }}
                     className="inline-flex items-center gap-1.5 text-xs text-primary hover:underline"
                   >
                     <Download className="h-3.5 w-3.5" />
                     {note.file_name || 'Download file'}
-                  </a>
+                  </button>
                 )}
                 <p className="text-xs text-muted-foreground">{new Date(note.created_at).toLocaleDateString()}</p>
               </GlassCard>
