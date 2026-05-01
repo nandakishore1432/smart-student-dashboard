@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 const navItems = [
-  { title: 'Dashboard', url: '/', icon: LayoutDashboard },
+  { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
   { title: 'Assignments', url: '/assignments', icon: BookOpen },
   { title: 'Notes', url: '/notes', icon: FileText },
   { title: 'Timetable', url: '/timetable', icon: Calendar },
