@@ -87,6 +87,7 @@ export function useAssignments() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
+      assertOnline();
       const { error } = await supabase.from('assignments').delete().eq('id', id);
       if (error) throw error;
     },
@@ -99,6 +100,7 @@ export function useAssignments() {
 
   const editMutation = useMutation({
     mutationFn: async (a: { id: string; title: string; subject: string; deadline: string | null; priority?: Priority }) => {
+      assertOnline();
       const { error } = await supabase
         .from('assignments')
         .update({ title: a.title, subject: a.subject, deadline: a.deadline || null, priority: a.priority || 'medium' })
