@@ -50,8 +50,15 @@ export function useAssignments() {
     },
   });
 
+  const assertOnline = () => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      throw new Error("You're offline — changes will be available once you reconnect.");
+    }
+  };
+
   const addMutation = useMutation({
     mutationFn: async (a: { title: string; subject: string; deadline: string | null; priority?: Priority }) => {
+      assertOnline();
       const { error } = await supabase.from('assignments').insert({
         user_id: user!.id,
         title: a.title,
@@ -70,6 +77,7 @@ export function useAssignments() {
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
+      assertOnline();
       const { error } = await supabase.from('assignments').update({ completed }).eq('id', id);
       if (error) throw error;
     },
