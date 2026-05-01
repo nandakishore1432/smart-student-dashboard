@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import { prefetchRoute, pathToKey } from '@/routes/registry';
 
 const navItems = [
   { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard },
@@ -57,21 +58,28 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1 px-2">
-              {navItems.map((item, index) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to={item.url}
-                      end={item.url === '/'}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-muted-foreground transition-all duration-200 hover:bg-primary/10 hover:text-primary group"
-                      activeClassName="bg-primary/10 text-primary font-semibold shadow-sm border-gradient"
-                    >
-                      <item.icon className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
-                      {!collapsed && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {navItems.map((item, index) => {
+                const key = pathToKey[item.url];
+                const prefetch = () => key && prefetchRoute(key);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild>
+                      <NavLink
+                        to={item.url}
+                        end={item.url === '/'}
+                        onMouseEnter={prefetch}
+                        onFocus={prefetch}
+                        onTouchStart={prefetch}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-muted-foreground transition-all duration-200 hover:bg-primary/10 hover:text-primary group"
+                        activeClassName="bg-primary/10 text-primary font-semibold shadow-sm border-gradient"
+                      >
+                        <item.icon className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
+                        {!collapsed && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
 
               {/* Admin Link */}
               {isAdmin && (

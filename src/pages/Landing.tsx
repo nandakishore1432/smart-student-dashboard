@@ -210,25 +210,39 @@ export default function Landing() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-            {features.map((f, i) => (
+          <motion.div
+            variants={{
+              hidden: {},
+              visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } },
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-80px' }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5"
+          >
+            {features.map((f) => (
               <motion.div
                 key={f.title}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-50px' }}
-                transition={{ duration: 0.5, delay: (i % 4) * 0.1 }}
-                whileHover={{ y: -6 }}
-                className="glass rounded-2xl p-6 group hover:shadow-glow transition-all duration-300"
+                variants={{
+                  hidden: { opacity: 0, y: 32, scale: 0.96 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+                  },
+                }}
+                whileHover={{ y: -6, transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] } }}
+                className="glass rounded-2xl p-6 group hover:shadow-glow transition-shadow duration-300"
               >
-                <div className="gradient-primary rounded-xl w-12 h-12 flex items-center justify-center mb-4 shadow-glow group-hover:scale-110 transition-transform">
+                <div className="gradient-primary rounded-xl w-12 h-12 flex items-center justify-center mb-4 shadow-glow group-hover:scale-110 transition-transform duration-300">
                   <f.icon className="h-6 w-6 text-primary-foreground" />
                 </div>
                 <h3 className="font-bold text-lg mb-2">{f.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{f.desc}</p>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
