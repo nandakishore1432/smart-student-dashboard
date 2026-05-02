@@ -104,6 +104,36 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          kind: Database["public"]["Enums"]["credit_tx_kind"]
+          reason: string | null
+          reference_id: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          kind: Database["public"]["Enums"]["credit_tx_kind"]
+          reason?: string | null
+          reference_id?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          kind?: Database["public"]["Enums"]["credit_tx_kind"]
+          reason?: string | null
+          reference_id?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       lost_found: {
         Row: {
           contact: string
@@ -203,6 +233,89 @@ export type Database = {
         }
         Relationships: []
       }
+      redemptions: {
+        Row: {
+          cost_at_purchase: number
+          created_at: string
+          id: string
+          notes: string | null
+          reward_id: string
+          status: Database["public"]["Enums"]["redemption_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cost_at_purchase: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reward_id: string
+          status?: Database["public"]["Enums"]["redemption_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cost_at_purchase?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          reward_id?: string
+          status?: Database["public"]["Enums"]["redemption_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "redemptions_reward_id_fkey"
+            columns: ["reward_id"]
+            isOneToOne: false
+            referencedRelation: "rewards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      rewards: {
+        Row: {
+          active: boolean
+          category: string
+          cost: number
+          created_at: string
+          created_by: string | null
+          description: string
+          id: string
+          image_url: string | null
+          stock: number | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          category?: string
+          cost: number
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          stock?: number | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          category?: string
+          cost?: number
+          created_at?: string
+          created_by?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          stock?: number | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       skill_exchange: {
         Row: {
           contact: string
@@ -260,6 +373,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_credits: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          last_daily_grant: string | null
+          lifetime_earned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_daily_grant?: string | null
+          lifetime_earned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          last_daily_grant?: string | null
+          lifetime_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -286,6 +429,48 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      award_credits: {
+        Args: {
+          _amount: number
+          _kind: Database["public"]["Enums"]["credit_tx_kind"]
+          _reason?: string
+          _reference_id?: string
+          _user_id: string
+        }
+        Returns: {
+          balance: number
+          created_at: string
+          id: string
+          last_daily_grant: string | null
+          lifetime_earned: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_credits"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      claim_daily_credits: {
+        Args: never
+        Returns: {
+          balance: number
+          created_at: string
+          id: string
+          last_daily_grant: string | null
+          lifetime_earned: number
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "user_credits"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -293,9 +478,37 @@ export type Database = {
         }
         Returns: boolean
       }
+      redeem_reward: {
+        Args: { _reward_id: string }
+        Returns: {
+          cost_at_purchase: number
+          created_at: string
+          id: string
+          notes: string | null
+          reward_id: string
+          status: Database["public"]["Enums"]["redemption_status"]
+          updated_at: string
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "redemptions"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      credit_tx_kind:
+        | "signup_bonus"
+        | "daily_login"
+        | "task_completed"
+        | "admin_grant"
+        | "purchase"
+        | "redemption"
+        | "adjustment"
+      redemption_status: "pending" | "fulfilled" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -424,6 +637,16 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      credit_tx_kind: [
+        "signup_bonus",
+        "daily_login",
+        "task_completed",
+        "admin_grant",
+        "purchase",
+        "redemption",
+        "adjustment",
+      ],
+      redemption_status: ["pending", "fulfilled", "cancelled"],
     },
   },
 } as const

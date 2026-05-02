@@ -15,6 +15,8 @@ export const loaders = {
   tutorials: () => import('@/pages/Tutorials'),
   skillExchange: () => import('@/pages/SkillExchange'),
   admin: () => import('@/pages/AdminDashboard'),
+  adminRewards: () => import('@/pages/AdminRewards'),
+  rewards: () => import('@/pages/Rewards'),
   auth: () => import('@/pages/Auth'),
 } as const;
 
@@ -40,6 +42,8 @@ export const pathToKey: Record<string, RouteKey> = {
   '/tutorials': 'tutorials',
   '/skill-exchange': 'skillExchange',
   '/admin': 'admin',
+  '/admin/rewards': 'adminRewards',
+  '/rewards': 'rewards',
   '/auth': 'auth',
 };
 
@@ -53,4 +57,6 @@ export const LazyChat = lazy(loaders.chat);
 export const LazyTutorials = lazy(loaders.tutorials);
 export const LazySkillExchange = lazy(loaders.skillExchange);
 export const LazyAdmin = lazy(loaders.admin);
+export const LazyAdminRewards = lazy(loaders.adminRewards);
+export const LazyRewards = lazy(loaders.rewards);
 export const LazyAuth = lazy(loaders.auth);
