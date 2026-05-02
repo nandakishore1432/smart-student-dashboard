@@ -15,6 +15,8 @@ export const loaders = {
   tutorials: () => import('@/pages/Tutorials'),
   skillExchange: () => import('@/pages/SkillExchange'),
   admin: () => import('@/pages/AdminDashboard'),
+  adminRewards: () => import('@/pages/AdminRewards'),
+  rewards: () => import('@/pages/Rewards'),
   auth: () => import('@/pages/Auth'),
 } as const;
 
