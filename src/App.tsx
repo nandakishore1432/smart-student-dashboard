@@ -26,6 +26,8 @@ import {
   LazyTutorials,
   LazySkillExchange,
   LazyAdmin,
+  LazyAdminRewards,
+  LazyRewards,
   prefetchRoute,
 } from "@/routes/registry";
 
@@ -92,6 +94,8 @@ function AnimatedRoutes() {
           <Route path="/tutorials" element={<ProtectedRoute><LazyTutorials /></ProtectedRoute>} />
           <Route path="/skill-exchange" element={<ProtectedRoute><LazySkillExchange /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><LazyAdmin /></AdminRoute>} />
+          <Route path="/admin/rewards" element={<AdminRoute><LazyAdminRewards /></AdminRoute>} />
+          <Route path="/rewards" element={<ProtectedRoute><LazyRewards /></ProtectedRoute>} />
           <Route path="/debug-chat" element={<ProtectedRoute><DebugChat /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>

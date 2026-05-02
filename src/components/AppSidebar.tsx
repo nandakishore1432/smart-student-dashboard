@@ -1,7 +1,7 @@
 import {
   LayoutDashboard, BookOpen, FileText, Calendar,
   Megaphone, Search, LogOut, GraduationCap, ShieldCheck, MessageCircle,
-  Lightbulb, Users
+  Lightbulb, Users, Gift, Coins
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import { useAuth } from '@/contexts/AuthContext';
@@ -25,6 +25,7 @@ const navItems = [
   { title: 'Chat', url: '/chat', icon: MessageCircle },
   { title: 'Tutorials', url: '/tutorials', icon: Lightbulb },
   { title: 'Skill Exchange', url: '/skill-exchange', icon: Users },
+  { title: 'Rewards', url: '/rewards', icon: Gift },
 ];
 
 export function AppSidebar() {
@@ -81,20 +82,30 @@ export function AppSidebar() {
                 );
               })}
 
-              {/* Admin Link */}
+              {/* Admin Links */}
               {isAdmin && (
-                <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
-                    <NavLink
-                      to="/admin"
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-warning transition-all duration-200 hover:bg-warning/10 hover:text-warning group"
-                      activeClassName="bg-warning/10 text-warning font-semibold shadow-sm"
-                    >
-                      <ShieldCheck className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
-                      {!collapsed && <span>Admin Panel</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <NavLink to="/admin"
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-warning transition-all duration-200 hover:bg-warning/10 hover:text-warning group"
+                        activeClassName="bg-warning/10 text-warning font-semibold shadow-sm">
+                        <ShieldCheck className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
+                        {!collapsed && <span>Admin Panel</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <NavLink to="/admin/rewards"
+                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-warning transition-all duration-200 hover:bg-warning/10 hover:text-warning group"
+                        activeClassName="bg-warning/10 text-warning font-semibold shadow-sm">
+                        <Coins className="h-5 w-5 shrink-0 group-hover:scale-110 transition-transform" />
+                        {!collapsed && <span>Manage Rewards</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
               )}
             </SidebarMenu>
           </SidebarGroupContent>

@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { CreditBadge } from '@/components/CreditBadge';
 
 export function TopNavbar() {
   const { user, signOut } = useAuth();
@@ -60,6 +61,7 @@ export function TopNavbar() {
       </div>
 
       <div className="flex items-center gap-1 sm:gap-2">
+        <CreditBadge />
         {/* Search */}
         <div className="relative">
           <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => setShowSearch(!showSearch)}>
