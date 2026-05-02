@@ -13,6 +13,7 @@ import { SplashScreen } from "@/components/SplashScreen";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import Landing from "./pages/Landing";
 import NotFound from "./pages/NotFound";
+import DebugChat from "./pages/DebugChat";
 import {
   LazyAuth,
   LazyDashboard,
@@ -91,6 +92,7 @@ function AnimatedRoutes() {
           <Route path="/tutorials" element={<ProtectedRoute><LazyTutorials /></ProtectedRoute>} />
           <Route path="/skill-exchange" element={<ProtectedRoute><LazySkillExchange /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminRoute><LazyAdmin /></AdminRoute>} />
+          <Route path="/debug-chat" element={<ProtectedRoute><DebugChat /></ProtectedRoute>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
